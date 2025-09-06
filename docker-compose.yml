@@ -1,34 +1,41 @@
-version: "3.8"
 services:
-frontend:
-build: ./frontend
-ports:
-- "3000:3000"
-depends_on:
-- backend
-networks:
-- app-network
-backend:
-build: ./backend
-ports:
-- "3001:3001"
-environment:
-- DB_URL=mongodb://mongo:27017/sjpdb
-depends_on:
-- mongo
-networks:
-- app-network
-mongo:
-image: mongo:4.0-xenial
-container_name: mongodb
-ports:
-- "27017:27017"
+  frontend:
+    build: ./frontend2
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend2
+    ports:
+      - "3001:3001"
+    environment:
+      - DB_URL=mysql://root:admin@mysql:3306/sjpdb
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: sjpdb
+    ports:
+      - "3307:3306"   # host:container
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: always
+    networks:
+      - app-network
+
 volumes:
-- mongo-data:/data/db
-restart: always
+  mysql-data:
+
 networks:
-- app-network
-volumes:
-mongo-data:
-networks:
-app-network:
+  app-network:
+    driver: bridge

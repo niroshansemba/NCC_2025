@@ -1,7 +1,17 @@
-FROM node:18
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
+# Use nginx image to serve static HTML
+FROM nginx:alpine
+
+# Set working directory inside container
+WORKDIR /usr/share/nginx/html
+
+# Remove default nginx index page
+RUN rm -rf ./*
+
+# Copy your frontend files (index.html) into container
 COPY . .
-EXPOSE 3000
-CMD ["npm", "start"]
+
+# Expose port 80 (nginx default)
+EXPOSE 80
+
+# Start nginx server
+CMD ["nginx", "-g", "daemon off;"]
